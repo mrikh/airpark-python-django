@@ -9,6 +9,9 @@ class User(models.Model):
     password = models.CharField(max_length = 20, blank = False, default = '')
     email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
 
+    class Meta:
+        db_table = 'Users'
+
 class CarPark(models.Model):
 
     #id added automatically

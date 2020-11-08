@@ -15,7 +15,9 @@ def create_user(request):
     try:
         user_serializer = UserSerializer(data=body)
         if user_serializer.is_valid(raise_exception = True):
-            user_serializer.save()
-            return JsonResponse({"code" : 200, 'data': body, 'message' : 'Success'})
+            user = user_serializer.save()
+            data = user_serializer.data
+            del data['password']
+            return JsonResponse({"code" : 200, 'data': data, 'message' : 'Success'})
     except ValidationError as e:
         return JsonResponse({"code" : e.status_code, 'message' : e.detail})
