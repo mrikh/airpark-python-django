@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
+from django.contrib.auth.hashers import check_password
 
 from rest_framework.parsers import JSONParser
 from .models import *
@@ -21,3 +22,17 @@ def create_user(request):
             return JsonResponse({"code" : 200, 'data': data, 'message' : 'Success'})
     except ValidationError as e:
         return JsonResponse({"code" : e.status_code, 'message' : e.detail})
+
+
+@api_view(['POST'])
+def login_user(request):
+
+    body = JSONParser().parse(request)
+    try:
+        user = User.objects.get(email=body['email'].strip())
+        if check_password(user.password, body['password']):
+            return JsonResponse({"code" : 200, 'data': "la", 'message' : 'Success'})
+        else:
+            return JsonResponse({"code" : 400, 'message' : 'Password doesnt match'})
+    except User.DoesNotExist:
+        return JsonResponse({"code" : 400, 'message' : 'User not found'})

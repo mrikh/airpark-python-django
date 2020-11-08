@@ -11,6 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = super(UserSerializer, self).create(validated_data)
         user.email = user.email.strip()
         user.name = user.name.strip()
-        user.password = make_password(user.password.strip())
+        user.password = make_password(user.password)
         user.save()
         return user
