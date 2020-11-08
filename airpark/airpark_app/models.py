@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import validate_email
 
 # Create your models here.
 class User(models.Model):
@@ -6,7 +7,7 @@ class User(models.Model):
     #id added automatically
     name = models.CharField(max_length = 30, blank = False, default = '')
     password = models.CharField(max_length = 20, blank = False, default = '')
-    email = models.CharField(max_length = 50, blank = False, default = '')
+    email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
 
 class CarPark(models.Model):
 
