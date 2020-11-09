@@ -101,7 +101,6 @@ terminado==0.8.3
 testpath==0.4.4
 tornado==6.0.3
 traitlets==4.3.3
-twint @ git+https://github.com/twintproject/twint.git@a45a8ac719d5710e7da92f77d9801b351e505c1f
 typed-ast==1.4.0
 typing-extensions==3.7.4.3
 urllib3==1.25.8
