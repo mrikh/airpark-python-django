@@ -16,4 +16,6 @@ mysql-connector-python==8.0.18
 mysqlclient==1.4.6
 python-dateutil==2.8.1
 sqlparse==0.2.4
+dj-database-url 
+psycopg2
 testpath==0.4.4
