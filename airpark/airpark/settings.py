@@ -89,8 +89,15 @@ WSGI_APPLICATION = 'airpark.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'airpark_db',
+        'USER': 'dbadmin_airpark',
+        'PASSWORD': '12345678',
+        'HOST': 'db4free.net',
+        'PORT': '3306',
+        # 'OPTIONS': {
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        # }
     }
 }
 
