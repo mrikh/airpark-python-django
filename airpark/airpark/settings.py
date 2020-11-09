@@ -25,7 +25,7 @@ SECRET_KEY = 'fp1!z&3$qs2pp^z-v05va294!^y$v(^vet3z3*przn=#u_huq&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://airpark-django.herokuapp.com/"]
+ALLOWED_HOSTS = ['airpark-django.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
