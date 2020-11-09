@@ -90,16 +90,24 @@ WSGI_APPLICATION = 'airpark.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'airpark_db',
-        'USER': 'root',
+        'NAME': 'airpark_database',
+        'USER': 'airpark-admin',
         'PASSWORD': '1234',
         'HOST': '34.105.141.121',
         'PORT': '3306',
-        # 'OPTIONS': {
-        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        # }
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'airpark_db',
+#         'USER': 'dbadmin_airpark',
+#         'PASSWORD': '12345678',
+#         'HOST': 'db4free.net',
+#         'PORT': '3306',
+#     }
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
@@ -139,8 +147,11 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
+
 USE_L10N = True
+
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
