@@ -6,7 +6,7 @@ class User(models.Model):
 
     #id added automatically
     name = models.CharField(max_length = 30, blank = False, default = '')
-    password = models.CharField(max_length = 50, blank = False, default = '')
+    password = models.CharField(max_length = 1000, blank = False, default = '')
     email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
 
     class Meta:
@@ -17,7 +17,7 @@ class CarPark(models.Model):
     #id added automatically
     airport_name = models.CharField(max_length = 100, blank = False)
 
-    image = models.CharField(max_length = 10000000, blank = False)
+    image = models.TextField(max_length = 10000, blank = False)
     car_park_name = models.CharField(max_length = 100, blank = False)
 
     price = models.FloatField()
