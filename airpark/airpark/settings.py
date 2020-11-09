@@ -91,9 +91,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'airpark_db',
-        'USER': 'dbadmin_airpark',
-        'PASSWORD': '12345678',
-        'HOST': 'db4free.net',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '34.105.141.121',
         'PORT': '3306',
         # 'OPTIONS': {
         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
