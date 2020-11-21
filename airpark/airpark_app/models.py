@@ -41,3 +41,10 @@ class Booking(models.Model):
     duration_type = models.IntegerField()
 
     alphanumeric_string = models.CharField(max_length = 100, blank = False)
+
+class Discount(models.Model):
+
+    #id added automatically
+    discount_type = models.IntegerField()
+
+    discount_percent = models.IntegerField()
