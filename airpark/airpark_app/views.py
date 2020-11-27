@@ -9,6 +9,8 @@ from .serializers import *
 from rest_framework.exceptions import ValidationError
 import stripe
 
+stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
+
 # Create your views here.
 @api_view(['POST'])
 def create_user(request):
@@ -32,7 +34,8 @@ def ephemeral_key(request):
     email = body['email']
     version = body['api_version']
 
-    key = stripe.EphemeralKey.create(customer=email, stripe_version=version)
+    customer = stripe.Customer.create(email = email)
+    key = stripe.EphemeralKey.create(customer=customer, stripe_version=version)
     return JsonResponse({"code" : 200, 'data': {"key" : key}, 'message' : 'Success'})
 
 
