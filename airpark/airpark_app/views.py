@@ -36,7 +36,7 @@ def ephemeral_key(request):
 
     customer = stripe.Customer.create(email = email)
     key = stripe.EphemeralKey.create(customer=customer, stripe_version=version)
-    return JsonResponse({"code" : 200, 'data': {"key" : key}, 'message' : 'Success'})
+    return JsonResponse({"code" : 200, 'data': key, 'message' : 'Success'})
 
 
 @api_view(['POST'])
