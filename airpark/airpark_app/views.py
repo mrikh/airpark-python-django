@@ -7,6 +7,7 @@ from rest_framework.parsers import JSONParser
 from .models import *
 from .serializers import *
 from rest_framework.exceptions import ValidationError
+import stripe
 
 # Create your views here.
 @api_view(['POST'])
@@ -22,6 +23,17 @@ def create_user(request):
             return JsonResponse({"code" : 200, 'data': data, 'message' : 'Success'})
     except ValidationError as e:
         return JsonResponse({"code" : e.status_code, 'message' : e.detail})
+
+
+@api_view(['POST'])
+def ephemeral_key(request):
+
+    body = JSONParser().parse(request)
+    email = body['email']
+    version = body['api_version']
+
+    key = stripe.EphemeralKey.create(customer=email, stripe_version=version)
+    return JsonResponse({"code" : 200, 'data': {"key" : key}, 'message' : 'Success'})
 
 
 @api_view(['POST'])
