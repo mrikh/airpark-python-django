@@ -53,3 +53,26 @@ def login_user(request):
             return JsonResponse({"code" : 400, 'message' : 'Password doesnt match'})
     except User.DoesNotExist:
         return JsonResponse({"code" : 400, 'message' : 'User not found'})
+
+@api_view(['POST'])
+def get_airports(request):
+
+    jsonData = CarPark.objects.all()
+    return JsonResponse({"code": 200, "data": {"airports": [{"airport_id": "", "airport_name": ""}]}})
+
+@api_view(['POST'])
+def get_availability(pAirport_id, pStart_date_timestamp, pEnd_date_timestamp, pHandicap_spot):
+
+    jsonData = CarPark.objects.all().filter(Airport_id = pAirport_id)
+    if(pHandicap_spot == 1):
+        jsonData = jsonData.filter(CarPark.max_dis_capacity >= 1)
+    bookings = Booking.objects.filter(Booking.booking_start_date < pEnd_date_timestamp and Booking.booking_end_date > pStart_date_timestamp)
+    bookings_count = bookings.count()
+    if(CarPark.max_capacity - bookings_count > 0):
+        return JsonResponse({"code": 200, "data": {"best_match": {"carpark_id": "", "carpark_name": "",
+                             "carpark_rate": "", "is_long_term": "", "carpark_image": "", "carpark_lat": "",
+                             "carpark_long": ""}, "other_matches": [{"carpark_id": "", "carpark_name": "",
+                             "carpark_rate": "", "is_long_term": "", "carpark_image": "", "carpark_lat": "",
+                             "carpark_long": ""}]}})
+    else:
+        return JsonResponse({"code" : 400, 'message' : 'Sorry, no car park available'})

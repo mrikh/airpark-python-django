@@ -27,6 +27,8 @@ class CarPark(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
+    max_dis_capacity = models.IntegerField()
+    max_capacity = models.IntegerField()
 
 class Booking(models.Model):
 
