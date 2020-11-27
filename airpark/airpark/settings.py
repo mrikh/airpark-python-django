@@ -88,19 +88,19 @@ WSGI_APPLICATION = 'airpark.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'airpark_database',
-    #     'USER': 'airpark-admin',
-    #     'PASSWORD': '1234',
-    #     'HOST': '34.105.141.121',
-    #     'PORT': '3306',
-    # }
-
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'airpark_database',
+        'USER': 'airpark-admin',
+        'PASSWORD': '1234',
+        'HOST': '34.105.141.121',
+        'PORT': '3306',
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
 }
 
 # DATABASES = {
