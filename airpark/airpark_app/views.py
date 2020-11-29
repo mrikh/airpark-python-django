@@ -49,8 +49,7 @@ def payment_intent(request):
     )
 
     client_secret = intent.client_secret   
-    intent_id = intent.client_id 
-    return JsonResponse({"code" : 200, 'data': {'client_secret' : client_secret, 'intent_id' : intent_id}, 'message' : 'Success'})
+    return JsonResponse({"code" : 200, 'data': {'client_secret' : client_secret}, 'message' : 'Success'})
 
 
 @api_view(['POST'])
