@@ -42,10 +42,14 @@ def ephemeral_key(request):
 @api_view(['POST'])
 def payment_intent(request):
     
+    body = JSONParser().parse(request)
+    customer_id = body['customer_id']
+
     #CHANGE TO PRICE LATER
     intent = stripe.PaymentIntent.create(
         amount=1099,
         currency='eur',
+        customer=customer_id,
     )
 
     client_secret = intent.client_secret   
