@@ -117,17 +117,21 @@ def get_availability(pAirport_id, pStart_date_timestamp, pEnd_date_timestamp, pH
         for key, value in suitable_car_parks.items():
             if spaces == value:
                 other_match = key
-        jsonData = {"best_match": {best_match.carpark_id: "", best_match.carpark_name: "", best_match.carpark_rate: "",
-                                   best_match.is_long_term: "", best_match.carpark_image: "", best_match.carpark_lat: ""
-                                   , best_match.carpark_long: ""}, "other_matches": [{other_match.carpark_id: "",
-                                   other_match.carpark_name: "", other_match.carpark_rate: "", other_match.is_long_term:
-                                   "", other_match.carpark_image: "", other_match.carpark_lat: "",
-                                   other_match.carpark_long: ""}]}
+        jsonData = {"best_match": {"carpark_id": best_match.car_park_id, "carpark_name": best_match.carpark_name,
+                                   "carpark_rate": best_match.carpark_rate, "is_long_term": best_match.is_long_term,
+                                   "carpark_image": best_match.carpark_image, "carpark_lat": best_match.carpark_lat,
+                                   "carpark_long": best_match.carpark_long}, "other_matches": [{"carpark_id":
+                                   other_match.car_park_id, "carpark_name": other_match.carpark_name, "carpark_rate":
+                                   other_match.carpark_rate, "is_long_term": other_match.is_long_term, "carpark_image":
+                                   other_match.carpark_image, "carpark_lat": other_match.carpark_lat, "carpark_long":
+                                   other_match.carpark_long}]}
+
         return JsonResponse({"code": 200, "data": jsonData})
     elif len(suitable_car_parks) == 1:
-        jsonData = {"best_match": {best_match.carpark_id: "", best_match.carpark_name: "", best_match.carpark_rate: "",
-                                   best_match.is_long_term: "", best_match.carpark_image: "", best_match.carpark_lat: ""
-                                   , best_match.carpark_long: ""}}
+        jsonData = {"best_match": {"carpark_id": best_match.car_park_id, "carpark_name": best_match.carpark_name,
+                                   "carpark_rate": best_match.carpark_rate, "is_long_term": best_match.is_long_term,
+                                   "carpark_image": best_match.carpark_image, "carpark_lat": best_match.carpark_lat,
+                                   "carpark_long": best_match.carpark_long}}
         return JsonResponse({"code": 200, "data": jsonData})
     elif len(suitable_car_parks) < 1:
         return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
@@ -136,5 +140,5 @@ def get_availability(pAirport_id, pStart_date_timestamp, pEnd_date_timestamp, pH
 @api_view(['POST'])
 def post_price(car_park_id, name, email, phone, car_reg, is_old, is_logged_in):
 
-    car_park = CarPark.objects.all().filter(CarPark_id=pAirport_id)
+    car_park = CarPark.objects.all().filter(car_park_id=pAirport_id)
 
