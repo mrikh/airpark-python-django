@@ -11,6 +11,7 @@ import stripe
 
 stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
 
+
 # Create your views here.
 @api_view(['POST'])
 def create_user(request):
@@ -138,7 +139,10 @@ def get_availability(pAirport_id, pStart_date_timestamp, pEnd_date_timestamp, pH
 
 
 @api_view(['POST'])
-def post_price(car_park_id, name, email, phone, car_reg, is_old, is_logged_in):
+def post_price(pcar_park_id, pname, pemail, pphone, pcar_reg, pis_old, pis_logged_in):
 
-    car_park = CarPark.objects.all().filter(car_park_id=pAirport_id)
+    car_park = CarPark.objects.all().filter(car_park_id=pcar_park_id)
+    price = car_park.price
+#    if pis_old == 1
+#        price = price
 
