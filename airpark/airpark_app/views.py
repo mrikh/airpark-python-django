@@ -73,8 +73,16 @@ def get_airports(request):
 
 
 @api_view(['GET'])
-def get_availability(pAirport_id, pStart_date_timestamp, pEnd_date_timestamp, pHandicap_spot, pIs_two_wheeler):
+def get_availability(request):
 
+    body = request.query_params
+    pAirport_id = body.get('pAirport_id', None)
+
+    pStart_date_timestamp = body.get('pStart_date_timestamp', None)
+    pEnd_date_timestamp = body.get('pEnd_date_timestamp', None)
+    pHandicap_spot = body.get('pHandicap_spot', None)
+    pIs_two_wheeler = body.get('pIs_two_wheeler', None)
+    
     # filter out the car parks not in the selected airport
     car_parks = CarPark.objects.all().filter(Airport_id=pAirport_id)
 
