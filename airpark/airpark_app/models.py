@@ -33,6 +33,7 @@ class CarPark(models.Model):
     max_dis_capacity = models.IntegerField()
     max_capacity = models.IntegerField()
     max_tw_capacity = models.IntegerField()
+    is_long_term = models.BooleanField()
 
 
 class Booking(models.Model):

@@ -84,7 +84,7 @@ def get_availability(request):
     pIs_two_wheeler = body.get('pIs_two_wheeler', None)
     
     # filter out the car parks not in the selected airport
-    car_parks = CarPark.objects.all().filter(Airport_id=pAirport_id)
+    car_parks = CarPark.objects.all().filter(airport_id=pAirport_id)
 
     # filter out car parks that don't have handicap/two wheeler spots if applicable
     if pHandicap_spot == 1:
@@ -96,68 +96,83 @@ def get_availability(request):
     # this method may underestimate the amount of free spaces sometimes but it's simple
 
     # filter in bookings that would overlap with the customer's booking
-    bookings = Booking.objects.filter(Booking.booking_start_date < pEnd_date_timestamp and Booking.booking_end_date >
-                                      pStart_date_timestamp)
+    # bookings = Booking.objects.filter(Booking.booking_start_date < pEnd_date_timestamp and Booking.booking_end_date >
+    #                                   pStart_date_timestamp)
 
     # filter out bookings that are not for car parks in this airport
-    for i in range(bookings):
-        bookings = bookings.filter(bookings[i].car_park_id in car_parks)
+    # for i in range(bookings):
+    #     bookings = bookings.filter(bookings[i].car_park_id in car_parks)
 
     # make a dict of each car park in the airport and the number of free spaces
-    suitable_car_parks = {"car_park": "spaces"}
-    most_suitable = 0
-    spaces = 0
-    car_park_bookings = bookings
-    for j in range(car_parks):
-        for k in range(bookings):
-            car_park_bookings = bookings.filter(bookings[k].car_park_id == car_parks[j].car_park_id)
-        bookings_count = car_park_bookings.count()
-        if car_parks[j].max_capacity - bookings_count > 0:
-            spaces = car_parks[j].max_capacity - bookings_count
-            suitable_car_parks[car_parks[j]] = spaces
-            if spaces > most_suitable:
-                most_suitable = spaces
+    # suitable_car_parks = {"car_park": "spaces"}
+    # most_suitable = 0
+    # spaces = 0
+    # car_park_bookings = bookings
+    # for j in range(car_parks):
+    #    for k in range(bookings):
+    #        car_park_bookings = bookings.filter(bookings[k].car_park_id == car_parks[j].car_park_id)
+    #    bookings_count = car_park_bookings.count()
+    #    if car_parks[j].max_capacity - bookings_count > 0:
+    #        spaces = car_parks[j].max_capacity - bookings_count
+    #        suitable_car_parks[car_parks[j]] = spaces
+    #        if spaces > most_suitable:
+    #            most_suitable = spaces
 
     # select best match and other match based on available spaces
-    for key, value in suitable_car_parks.items():
-        if spaces == value:
-            best_match = key
-        else:
-            return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
+#    for key, value in suitable_car_parks.items():
+#        if spaces == value:
+#            best_match = key
+#        else:
+#            return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
-    match_value = 0
-    if len(suitable_car_parks) > 1:
-        for value in suitable_car_parks.values():
-            if match_value < value < spaces:
-                match_value = value
-        for key, value in suitable_car_parks.items():
-            if spaces == value:
-                other_match = key
-        jsonData = {"best_match": {"carpark_id": best_match.car_park_id, "carpark_name": best_match.carpark_name,
-                                   "carpark_rate": best_match.carpark_rate, "is_long_term": best_match.is_long_term,
-                                   "carpark_image": best_match.carpark_image, "carpark_lat": best_match.carpark_lat,
-                                   "carpark_long": best_match.carpark_long}, "other_matches": [{"carpark_id":
-                                   other_match.car_park_id, "carpark_name": other_match.carpark_name, "carpark_rate":
-                                   other_match.carpark_rate, "is_long_term": other_match.is_long_term, "carpark_image":
-                                   other_match.carpark_image, "carpark_lat": other_match.carpark_lat, "carpark_long":
-                                   other_match.carpark_long}]}
+    # match_value = 0
+    best_match = car_parks[0]
+    if len(car_parks) > 1:
+        other_match = car_parks[1]
+        # for value in suitable_car_parks.values():
+        #     if match_value < value < spaces:
+        #         match_value = value
+        # for key, value in suitable_car_parks.items():
+        #     if spaces == value:
+        #         other_match = key
+        jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
+                                   "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
+                                   "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
+                                   "carpark_long": best_match.longitude}, "other_matches": [{"carpark_id":
+                                   other_match.id, "carpark_name": other_match.car_park_name, "carpark_rate":
+                                   other_match.price, "is_long_term": other_match.is_long_term, "carpark_image":
+                                   other_match.image, "carpark_lat": other_match.latitude, "carpark_long":
+                                   other_match.longitude}]}
 
         return JsonResponse({"code": 200, "data": jsonData})
-    elif len(suitable_car_parks) == 1:
-        jsonData = {"best_match": {"carpark_id": best_match.car_park_id, "carpark_name": best_match.carpark_name,
-                                   "carpark_rate": best_match.carpark_rate, "is_long_term": best_match.is_long_term,
-                                   "carpark_image": best_match.carpark_image, "carpark_lat": best_match.carpark_lat,
-                                   "carpark_long": best_match.carpark_long}}
+    elif len(car_parks) == 1:
+        jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
+                                   "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
+                                   "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
+                                   "carpark_long": best_match.longitude}}
         return JsonResponse({"code": 200, "data": jsonData})
-    elif len(suitable_car_parks) < 1:
+    elif len(car_parks) < 1:
         return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
 
 @api_view(['POST'])
-def post_price(pcar_park_id, pname, pemail, pphone, pcar_reg, pis_old, pis_logged_in):
+def post_price(request):
 
-    car_park = CarPark.objects.all().filter(car_park_id=pcar_park_id)
-    price = car_park.price
-#    if pis_old == 1
-#        price = price
+    body = request.query_params
+    car_park_id = body.get('car_park_id', None)
+    name = body.get('name', None)
+    email = body.get('email', None)
+    phone = body.get('phone', None)
+    car_reg = body.get('car_reg', None)
+    is_old = body.get('is_old', None)
+    is_logged_in = body.get('is_logged_in', None)
 
+    car_park = CarPark.objects.all().filter(id=car_park_id)
+    price = car_park[0].price
+    discount_percent = 0
+    if is_old == 1:
+        price = price * 0.9
+        discount_percent = 10
+    jsonData = {"data": {"final_price": price, "discounts_applied": [{"discount_id": "", "discount info": "",
+                                                                      "discount_percentage": discount_percent}]}}
+    return JsonResponse({"code": 200, "data": jsonData})
