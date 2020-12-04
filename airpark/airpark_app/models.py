@@ -18,6 +18,7 @@ class CarPark(models.Model):
 
     # id added automatically
     airport_name = models.CharField(max_length = 100, blank = False)
+    airport_id = models.CharField(max_length = 100, blank = False)
 
     image = models.TextField(max_length = 10000, blank = False)
     car_park_name = models.CharField(max_length = 100, blank = False)

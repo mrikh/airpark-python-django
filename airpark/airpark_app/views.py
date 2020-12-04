@@ -60,8 +60,15 @@ def login_user(request):
 def get_airports(request):
 
     car_parks = CarPark.objects.all()
-    for i in range(car_parks):
-        jsonData = {"airports": {"airport_id": car_parks[i].airport_id, "airport_name": car_parks[i].airport_name}}
+    airports = {}
+    for j in car_parks:
+        if j.airport_id not in airports:
+            airports[j.airport_id] = j.airport_name
+    listofDicts = []
+    for key, value in airports.items():
+        dictionary = {"airport_id": key, "airport_name": value}
+        listofDicts.append(dictionary)
+    jsonData = {"airports": listofDicts}
     return JsonResponse({"code": 200, "data": jsonData})
 
 
