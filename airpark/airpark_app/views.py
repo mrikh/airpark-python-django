@@ -177,9 +177,10 @@ def calc_price(request):
     
         return JsonResponse({"code" : 200, 'data': {'key' : key, 'total' : result[0], 'discounts' : result[1]}, 'message' : 'Success'})
     except Exception:
+        
         return JsonResponse({"code" : 400, 'message' : 'Something went wrong'})
 
-
+    return JsonResponse({"code" : 400, 'message' : 'Something went wrong'})
 
 def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is_logged_in, email, car_wash):
     
@@ -217,6 +218,7 @@ def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is
             discounts_applied.append('Discount for being a frequent app user.')
     except Exception as e:
         #do nothing. Exception raised if no booking exists etc.
+        print(e)
 
     #atleast 30% discount
     total_discount = min(30, total_discount)
