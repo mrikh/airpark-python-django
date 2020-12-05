@@ -14,3 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.password = make_password(user.password)
         user.save()
         return user
+
+class CarParkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarPark
+        fields = ('airport_id', 'airport_name', 'image', 'car_park_name', 'price', 'latitude', 'longitude', 'dis_capacity', 'normal_capacity', 'tw_capacity', 'is_long_term')

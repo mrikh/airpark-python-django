@@ -11,7 +11,6 @@ import stripe
 
 stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
 
-
 # Create your views here.
 @api_view(['POST'])
 def create_user(request):
@@ -74,7 +73,7 @@ def login_user(request):
 
 
 @api_view(['GET'])
-def get_airports(request):
+def airports_list(request):
 
     car_parks = CarPark.objects.all()
     airports = {}
@@ -93,21 +92,25 @@ def get_airports(request):
 def get_availability(request):
 
     body = request.query_params
-    pAirport_id = body.get('pAirport_id', None)
+    airport_id = body.get('airport_id', None)
 
-    pStart_date_timestamp = body.get('pStart_date_timestamp', None)
-    pEnd_date_timestamp = body.get('pEnd_date_timestamp', None)
-    pHandicap_spot = body.get('pHandicap_spot', None)
-    pIs_two_wheeler = body.get('pIs_two_wheeler', None)
+    start_date = body.get('start_date', None)
+    end_date = body.get('end_date', None)
+    is_handicap = body.get('is_handicap', None)
+    is_two_wheeler = body.get('is_two_wheeler', None)
     
     # filter out the car parks not in the selected airport
-    car_parks = CarPark.objects.all().filter(airport_id=pAirport_id)
+    car_parks = CarPark.objects.all().filter(airport_id=airport_id)
 
     # filter out car parks that don't have handicap/two wheeler spots if applicable
-    if pHandicap_spot == 1:
+    if is_handicap == 1:
         car_parks = car_parks.filter(CarPark.max_dis_capacity >= 1)
-    if pIs_two_wheeler == 1:
+    if is_two_wheeler == 1:
         car_parks = car_parks.filter(CarPark.max_tw_capacity >= 1)
+
+    if len(car_parks) == 0:
+        return JsonResponse({"code": 404, "data": {}, "message" : "Data not Found"})
+
 
     # ensure there is space available by checking the other bookings
     # this method may underestimate the amount of free spaces sometimes but it's simple
@@ -143,33 +146,31 @@ def get_availability(request):
 #            return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
     # match_value = 0
-    best_match = car_parks[0]
-    if len(car_parks) > 1:
-        other_match = car_parks[1]
+    best_match = car_parks.first()
+
+    #means no more items in list
+    if best_match is not None:
+        car_parks[0].delete()
+
+    # if len(car_parks) > 1:
         # for value in suitable_car_parks.values():
         #     if match_value < value < spaces:
         #         match_value = value
         # for key, value in suitable_car_parks.items():
         #     if spaces == value:
         #         other_match = key
-        jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
-                                   "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
-                                   "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
-                                   "carpark_long": best_match.longitude}, "other_matches": [{"carpark_id":
-                                   other_match.id, "carpark_name": other_match.car_park_name, "carpark_rate":
-                                   other_match.price, "is_long_term": other_match.is_long_term, "carpark_image":
-                                   other_match.image, "carpark_lat": other_match.latitude, "carpark_long":
-                                   other_match.longitude}]}
-
-        return JsonResponse({"code": 200, "data": jsonData})
-    elif len(car_parks) == 1:
-        jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
-                                   "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
-                                   "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
-                                   "carpark_long": best_match.longitude}}
-        return JsonResponse({"code": 200, "data": jsonData})
-    elif len(car_parks) < 1:
-        return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
+    best_match_json = CarParkSerializer(best_match).data
+    jsonData = {"best_match": best_match_json, "other_matches": CarParkSerializer(car_parks, many=True).data}
+    return JsonResponse({"code": 200, "data": jsonData})
+        
+    # elif len(car_parks) == 1:
+    #     jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
+    #                                "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
+    #                                "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
+    #                                "carpark_long": best_match.longitude}}
+    #     return JsonResponse({"code": 200, "data": jsonData})
+    # elif len(car_parks) < 1:
+    #     return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
 
 @api_view(['POST'])

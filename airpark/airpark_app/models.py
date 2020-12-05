@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import validate_email
 
-
 # Create your models here.
 class User(models.Model):
 
@@ -12,7 +11,6 @@ class User(models.Model):
 
     class Meta:
         db_table = 'Users'
-
 
 class CarPark(models.Model):
 
@@ -25,16 +23,16 @@ class CarPark(models.Model):
 
     price = models.FloatField()
 
-    total_spots = models.IntegerField()
-
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    max_dis_capacity = models.IntegerField()
-    max_capacity = models.IntegerField()
-    max_tw_capacity = models.IntegerField()
+    dis_capacity = models.IntegerField()
+    normal_capacity = models.IntegerField()
+    tw_capacity = models.IntegerField()
     is_long_term = models.BooleanField()
 
+    class Meta:
+        db_table = 'CarPark'
 
 class Booking(models.Model):
 
@@ -54,6 +52,8 @@ class Booking(models.Model):
 
     alphanumeric_string = models.CharField(max_length = 100, blank = False)
 
+    class Meta:
+        db_table = 'Bookings'
 
 class Discount(models.Model):
 
@@ -61,3 +61,6 @@ class Discount(models.Model):
     discount_type = models.IntegerField()
 
     discount_percent = models.IntegerField()
+
+    class Meta:
+        db_table = 'Discounts'
