@@ -18,4 +18,4 @@ class UserSerializer(serializers.ModelSerializer):
 class CarParkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarPark
-        fields = ('airport_id', 'airport_name', 'image', 'car_park_name', 'price', 'latitude', 'longitude', 'dis_capacity', 'normal_capacity', 'tw_capacity', 'is_long_term')
+        fields = ('id', 'airport_id', 'airport_name', 'image', 'car_park_name', 'price', 'latitude', 'longitude', 'dis_capacity', 'normal_capacity', 'tw_capacity', 'is_long_term')

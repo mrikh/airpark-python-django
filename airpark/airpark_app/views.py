@@ -93,7 +93,6 @@ def get_availability(request):
 
     body = request.query_params
     airport_id = body.get('airport_id', None)
-
     start_date = body.get('start_date', None)
     end_date = body.get('end_date', None)
     is_handicap = body.get('is_handicap', None)
@@ -111,7 +110,7 @@ def get_availability(request):
         car_parks = car_parks.filter(CarPark.max_tw_capacity >= 1)
 
     if len(car_parks) == 0:
-        return JsonResponse({"code": 404, "data": {}, "message" : "Data not Found"})
+        return JsonResponse({"code": 404, "data": None, "message" : "Data not Found"})
 
 
     # ensure there is space available by checking the other bookings
@@ -150,10 +149,6 @@ def get_availability(request):
     # match_value = 0
     best_match = car_parks.first()
 
-    #means no more items in list
-    if best_match is not None:
-        car_parks[0].delete()
-
     # if len(car_parks) > 1:
         # for value in suitable_car_parks.values():
         #     if match_value < value < spaces:
@@ -162,17 +157,11 @@ def get_availability(request):
         #     if spaces == value:
         #         other_match = key
     best_match_json = CarParkSerializer(best_match).data
+
+    car_parks = car_parks.filter().exclude(id = best_match.id)
+
     jsonData = {"best_match": best_match_json, "other_matches": CarParkSerializer(car_parks, many=True).data}
     return JsonResponse({"code": 200, "data": jsonData})
-        
-    # elif len(car_parks) == 1:
-    #     jsonData = {"best_match": {"carpark_id": best_match.id, "carpark_name": best_match.car_park_name,
-    #                                "carpark_rate": best_match.price, "is_long_term": best_match.is_long_term,
-    #                                "carpark_image": best_match.image, "carpark_lat": best_match.latitude,
-    #                                "carpark_long": best_match.longitude}}
-    #     return JsonResponse({"code": 200, "data": jsonData})
-    # elif len(car_parks) < 1:
-    #     return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
 
 @api_view(['POST'])
