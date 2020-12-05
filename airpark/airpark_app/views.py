@@ -98,6 +98,8 @@ def get_availability(request):
     end_date = body.get('end_date', None)
     is_handicap = body.get('is_handicap', None)
     is_two_wheeler = body.get('is_two_wheeler', None)
+
+    #only show long term if atleast 24 hours.
     
     # filter out the car parks not in the selected airport
     car_parks = CarPark.objects.all().filter(airport_id=airport_id)
