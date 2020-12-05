@@ -168,6 +168,7 @@ def calc_price(request):
         start_date = body['start_date']
         is_handicap = body['is_handicap']
         version = body['version']
+        is_two_wheeler = body['is_two_wheeler']
 
         result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)      
 
