@@ -26,19 +26,6 @@ def create_user(request):
     except ValidationError as e:
         return JsonResponse({"code" : e.status_code, 'message' : e.detail})
 
-
-@api_view(['POST'])
-def ephemeral_key(request):
-
-    body = JSONParser().parse(request)
-    email = body['email']
-    version = body['api_version']
-
-    customer = stripe.Customer.create(email = email)
-    key = stripe.EphemeralKey.create(customer=customer, stripe_version=version)
-    return JsonResponse({"code" : 200, 'data': key, 'message' : 'Success'})
-
-
 @api_view(['POST'])
 def payment_intent(request):
     
@@ -165,23 +152,72 @@ def get_availability(request):
 
 
 @api_view(['POST'])
-def post_price(request):
+def calc_price(request):
 
-    body = request.query_params
-    car_park_id = body.get('car_park_id', None)
-    name = body.get('name', None)
-    email = body.get('email', None)
-    phone = body.get('phone', None)
-    car_reg = body.get('car_reg', None)
-    is_old = body.get('is_old', None)
-    is_logged_in = body.get('is_logged_in', None)
+    body = JSONParser().parse(request)
+    try:
+        car_park_id = body['car_park_id']
+        customer_name = body['customer_name']
+        email = body['email']
+        phone = body['phone']
+        car_reg = body['car_reg']
+        is_old = body['is_old']
+        is_logged_in = body['is_logged_in']
+        car_wash = body['car_wash']
+        end_date = body['end_date']
+        start_date = body['start_date']
+        is_handicap = body['is_handicap']
+        version = body['version']
 
-    car_park = CarPark.objects.all().filter(id=car_park_id)
-    price = car_park[0].price
-    discount_percent = 0
-    if is_old == 1:
-        price = price * 0.9
-        discount_percent = 10
-    jsonData = {"data": {"final_price": price, "discounts_applied": [{"discount_id": "", "discount info": "",
-                                                                      "discount_percentage": discount_percent}]}}
-    return JsonResponse({"code": 200, "data": jsonData})
+        result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)      
+
+        customer = stripe.Customer.create(email = email)
+        key = stripe.EphemeralKey.create(customer=customer, stripe_version=version)
+    
+        return JsonResponse({"code" : 200, 'data': {'key' : key, 'total' : result[0], 'discounts' : result[1]}, 'message' : 'Success'})
+    except Exception:
+        return JsonResponse({"code" : 400, 'message' : 'Something went wrong'})
+
+
+
+def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is_logged_in, email, car_wash):
+    
+    #convert to seconds and then to hours. Atleast 1 hour is the slot
+    hours_difference = max(((end_date - start_date)/1000)/3600, 1)
+    carpark = CarPark.objects.get(id = carpark_id)
+    calculated_price = carpark.price * hours_difference
+    
+    if car_wash:
+        calculated_price += 25
+
+    total_discount = 0
+    discounts_applied = []
+
+    if is_old:
+        discount = Discount.objects.get(discount_type = 'old_age')
+        total_discount += discount.discount_percent
+        discounts_applied.append('Old Age Discount')
+
+    if is_handicap:
+        discount = Discount.objects.get(discount_type = 'disabled')
+        total_discount += discount.discount_percent
+        discounts_applied.append('Physically Disabled Discount')
+
+    if is_logged_in:
+        discount = Discount.objects.get(discount_type = 'login')
+        total_discount += discount.discount_percent
+        discounts_applied.append('Discount for being a registered user.')
+
+    #get current user bookings
+    try:
+        if len(Booking.objects.get(user_email = email)) > 5:
+            discount = Discount.objects.get(discount_type = 'frequent_user')
+            total_discount += discount.discount_percent
+            discounts_applied.append('Discount for being a frequent app user.')
+    except Exception as e:
+        #do nothing. Exception raised if no booking exists etc.
+
+    #atleast 30% discount
+    total_discount = min(30, total_discount)
+    final_price = total_discount/100 * calculated_price
+    return (final_price, discounts_applied)

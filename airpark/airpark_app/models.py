@@ -40,7 +40,7 @@ class Booking(models.Model):
 
     # id of car park associated with the booking
     car_park_id = models.ForeignKey(CarPark, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
 
     booking_start_date = models.DateTimeField()
     booking_end_date = models.DateTimeField()
@@ -58,8 +58,7 @@ class Booking(models.Model):
 class Discount(models.Model):
 
     # id added automatically
-    discount_type = models.IntegerField()
-
+    discount_type = models.CharField(max_length = 30, blank = False, default = '')
     discount_percent = models.IntegerField()
 
     class Meta:
