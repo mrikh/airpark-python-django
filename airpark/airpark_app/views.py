@@ -8,6 +8,7 @@ from .models import *
 from .serializers import *
 from rest_framework.exceptions import ValidationError
 import stripe
+import secrets
 
 stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
 
@@ -30,11 +31,22 @@ def create_user(request):
 def payment_intent(request):
     
     body = JSONParser().parse(request)
+    
     customer_id = body['customer_id']
+    car_park_id = body['car_park_id']
+    email = body['email']
+    is_old = body['is_old']
+    is_logged_in = body['is_logged_in']
+    car_wash = body['car_wash']
+    end_date = body['end_date']
+    start_date = body['start_date']
+    is_handicap = body['is_handicap']
+
+    result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
 
     #CHANGE TO PRICE LATER
     intent = stripe.PaymentIntent.create(
-        amount=1099,
+        amount=result[0],
         currency='eur',
         customer=customer_id,
     )
@@ -42,6 +54,44 @@ def payment_intent(request):
     client_secret = intent.client_secret   
     return JsonResponse({"code" : 200, 'data': {'client_secret' : client_secret}, 'message' : 'Success'})
 
+@api_view(['POST'])
+def payment_done(request):
+
+    body = JSONParser().parse(request)
+
+    car_park_id = body['car_park_id']
+    email = body['email']
+    is_old = body['is_old']
+    is_logged_in = body['is_logged_in']
+    car_wash = body['car_wash']
+    end_date = body['end_date']
+    start_date = body['start_date']
+    is_handicap = body['is_handicap']
+    is_two_wheeler = body['is_two_wheeler']
+
+    result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
+
+    body['total_cost'] = result[0]
+    body['alphanumeric_string'] = secrets.token_hex(16)
+
+    try:
+        booking_serializer = BookingSerializer(data=body)
+        if booking_serializer.is_valid(raise_exception = True):
+            booking = booking_serializer.save()
+            data = booking.data
+
+            #successfully saved so now we update counts in the carparks
+            carpark = CarPark.objects.get(id=booking.car_park_id)
+            if booking.is_handicap:
+                carpark.dis_capacity -= 1
+            elif booking.is_two_wheeler:
+                carpark.tw_capacity -= 1
+            else:
+                carpark.normal_capacity -= 1
+            carpark.save()
+            return JsonResponse({"code" : 200, 'data': data, 'message' : 'Success'})
+    except ValidationError as e:
+        return JsonResponse({"code" : e.status_code, 'message' : e.detail})
 
 @api_view(['POST'])
 def login_user(request):
@@ -177,7 +227,6 @@ def calc_price(request):
     
         return JsonResponse({"code" : 200, 'data': {'key' : key, 'total' : result[0], 'discounts' : result[1]}, 'message' : 'Success'})
     except Exception:
-        
         return JsonResponse({"code" : 400, 'message' : 'Something went wrong'})
 
     return JsonResponse({"code" : 400, 'message' : 'Something went wrong'})

@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^api/airports-list', views.airports_list),
     url(r'^api/availability-list', views.get_availability),
     url(r'^api/calc-price', views.calc_price)
+    url(r'^api/payment-done', views.payment_done)
 ]

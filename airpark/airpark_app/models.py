@@ -17,15 +17,11 @@ class CarPark(models.Model):
     # id added automatically
     airport_name = models.CharField(max_length = 100, blank = False)
     airport_id = models.CharField(max_length = 100, blank = False)
-
     image = models.TextField(max_length = 10000, blank = False)
     car_park_name = models.CharField(max_length = 100, blank = False)
-
     price = models.FloatField()
-
     latitude = models.FloatField()
     longitude = models.FloatField()
-
     dis_capacity = models.IntegerField()
     normal_capacity = models.IntegerField()
     tw_capacity = models.IntegerField()
@@ -36,21 +32,18 @@ class CarPark(models.Model):
 
 class Booking(models.Model):
 
-    # id added automatically for booking
-
-    # id of car park associated with the booking
-    car_park_id = models.ForeignKey(CarPark, on_delete=models.CASCADE)
+    car_park_id = models.ForeignKey(CarPark)
+    stripe_customer_id = models.CharField(max_length = 100, blank = False)
     user_email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
-
-    booking_start_date = models.DateTimeField()
-    booking_end_date = models.DateTimeField()
-
-    total_cost = models.FloatField()
-
-    # duration 0 = short term, 1 = long term
-    duration_type = models.IntegerField()
-
-    alphanumeric_string = models.CharField(max_length = 100, blank = False)
+    is_old = models.BooleanField(default = False)
+    is_logged_in = models.BooleanField(default = False)
+    car_wash = models.BooleanField(default = False)
+    is_handicap = models.BooleanField(default = False)
+    booking_start_date = models.DateTimeField(blank = False)
+    booking_end_date = models.DateTimeField(blank = False)
+    total_cost = models.FloatField(blank = False)
+    is_two_wheeler = models.BooleanField(default = False)
+    alphanumeric_string = models.CharField(max_length = 100, blank = False, unique = True)
 
     class Meta:
         db_table = 'Bookings'
