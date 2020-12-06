@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 from django.contrib.auth.hashers import check_password
+from datetime import datetime
 
 from rest_framework.parsers import JSONParser
 from .models import *
@@ -58,7 +59,8 @@ def payment_intent(request):
 def payment_done(request):
 
     body = JSONParser().parse(request)
-
+    
+    stripe_customer_id = body['stripe_customer_id']
     car_park_id = body['car_park_id']
     email = body['email']
     is_old = body['is_old']
@@ -71,6 +73,9 @@ def payment_done(request):
 
     result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
 
+    body['car_park'] = car_park_id
+    body['start_date'] = datetime.fromtimestamp(body['start_date'])
+    body['end_date'] = datetime.fromtimestamp(body['end_date'])
     body['total_cost'] = result[0]
     body['alphanumeric_string'] = secrets.token_hex(16)
 
@@ -78,10 +83,10 @@ def payment_done(request):
         booking_serializer = BookingSerializer(data=body)
         if booking_serializer.is_valid(raise_exception = True):
             booking = booking_serializer.save()
-            data = booking.data
+            data = booking_serializer.data
 
             #successfully saved so now we update counts in the carparks
-            carpark = CarPark.objects.get(id=booking.car_park_id)
+            carpark = CarPark.objects.get(id=booking.car_park.id)
             if booking.is_handicap:
                 carpark.dis_capacity -= 1
             elif booking.is_two_wheeler:
@@ -261,7 +266,7 @@ def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is
 
     #get current user bookings
     try:
-        if len(Booking.objects.get(user_email = email)) > 5:
+        if len(Booking.objects.all().filter(email = email)) > 5:
             discount = Discount.objects.get(discount_type = 'frequent_user')
             total_discount += discount.discount_percent
             discounts_applied.append('Discount for being a frequent app user.')

@@ -32,18 +32,19 @@ class CarPark(models.Model):
 
 class Booking(models.Model):
 
-    car_park_id = models.ForeignKey(CarPark)
-    stripe_customer_id = models.CharField(max_length = 100, blank = False)
-    user_email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email], unique = True)
+    car_park = models.ForeignKey(CarPark, on_delete = models.DO_NOTHING)
+    stripe_customer_id = models.CharField(max_length = 100, blank = False, default = '')
+    email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email])
     is_old = models.BooleanField(default = False)
     is_logged_in = models.BooleanField(default = False)
     car_wash = models.BooleanField(default = False)
     is_handicap = models.BooleanField(default = False)
-    booking_start_date = models.DateTimeField(blank = False)
-    booking_end_date = models.DateTimeField(blank = False)
+    start_date = models.DateTimeField(blank = False)
+    end_date = models.DateTimeField(blank = False)
     total_cost = models.FloatField(blank = False)
     is_two_wheeler = models.BooleanField(default = False)
     alphanumeric_string = models.CharField(max_length = 100, blank = False, unique = True)
+    is_active = models.BooleanField(default = True)
 
     class Meta:
         db_table = 'Bookings'

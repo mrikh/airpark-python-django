@@ -15,17 +15,12 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class BookingSerializer(serializers.ModelSerializer):
-
-    stripe_customer_id = serializers.CharField(source = 'customer_id')
-    user_email = serializers.CharField(source = 'email')
-    booking_start_date = serializers.DateTimeField(source = 'start_date')
-    booking_end_date = serializers.DateTimeField(source = 'end_date')
-
-    class Meta:
-        model = Booking
-
 class CarParkSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarPark
         fields = ('id', 'airport_id', 'airport_name', 'image', 'car_park_name', 'price', 'latitude', 'longitude', 'dis_capacity', 'normal_capacity', 'tw_capacity', 'is_long_term')
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = '__all__'
