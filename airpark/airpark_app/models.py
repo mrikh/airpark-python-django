@@ -33,7 +33,6 @@ class CarPark(models.Model):
 class Booking(models.Model):
 
     car_park = models.ForeignKey(CarPark, on_delete = models.DO_NOTHING)
-    stripe_customer_id = models.CharField(max_length = 100, blank = False, default = '')
     email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email])
     is_old = models.BooleanField(default = False)
     is_logged_in = models.BooleanField(default = False)

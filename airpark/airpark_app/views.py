@@ -61,7 +61,6 @@ def payment_done(request):
 
     body = JSONParser().parse(request)
     
-    stripe_customer_id = body['stripe_customer_id']
     car_park_id = body['car_park_id']
     email = body['email']
     is_old = body['is_old']
