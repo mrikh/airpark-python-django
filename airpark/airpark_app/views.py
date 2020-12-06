@@ -276,5 +276,5 @@ def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is
 
     #atleast 30% discount
     total_discount = min(30, total_discount)
-    final_price = total_discount/100 * calculated_price
+    final_price = calculated_price - (total_discount/100 * calculated_price)
     return (math.ceil(final_price), discounts_applied)
