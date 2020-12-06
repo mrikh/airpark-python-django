@@ -10,6 +10,7 @@ from .serializers import *
 from rest_framework.exceptions import ValidationError
 import stripe
 import secrets
+import math
 
 stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
 
@@ -44,10 +45,10 @@ def payment_intent(request):
     is_handicap = body['is_handicap']
 
     result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
-
-    #CHANGE TO PRICE LATER
+    
     intent = stripe.PaymentIntent.create(
-        amount=result[0],
+        #multiply by 100 as everything is in cents
+        amount=result[0] * 100,
         currency='eur',
         customer=customer_id,
     )
@@ -277,4 +278,4 @@ def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is
     #atleast 30% discount
     total_discount = min(30, total_discount)
     final_price = total_discount/100 * calculated_price
-    return (final_price, discounts_applied)
+    return (math.ceil(final_price), discounts_applied)
