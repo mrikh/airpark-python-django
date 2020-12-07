@@ -135,25 +135,24 @@ def get_availability(request):
 
     body = request.query_params
     airport_id = body.get('airport_id', None)
-    start_date = body.get('start_date', None)
-    end_date = body.get('end_date', None)
+    start_date = int(body.get('start_date', None))
+    end_date = int(body.get('end_date', None))
     is_handicap = body.get('is_handicap', None)
     is_two_wheeler = body.get('is_two_wheeler', None)
 
-    #only show long term if atleast 24 hours.
-    
     # filter out the car parks not in the selected airport
     car_parks = CarPark.objects.all().filter(airport_id=airport_id)
 
     # filter out car parks that don't have handicap/two wheeler spots if applicable
     if is_handicap == 1:
-        car_parks = car_parks.filter(CarPark.max_dis_capacity >= 1)
-    if is_two_wheeler == 1:
-        car_parks = car_parks.filter(CarPark.max_tw_capacity >= 1)
+        car_parks = car_parks.filter(dis_capacity__gte = 1)
+    elif is_two_wheeler == 1:
+        car_parks = car_parks.filter(tw_capacity__gte = 1)
+    else:
+        car_parks = car_parks.filter(normal_capacity__gte = 1)
 
     if len(car_parks) == 0:
         return JsonResponse({"code": 404, "data": None, "message" : "Data not Found"})
-
 
     # ensure there is space available by checking the other bookings
     # this method may underestimate the amount of free spaces sometimes but it's simple
@@ -188,8 +187,34 @@ def get_availability(request):
 #        else:
 #            return JsonResponse({"code": 400, 'message': 'There are no available spaces at your selected airport'})
 
-    # match_value = 0
-    best_match = car_parks.first()
+    #only show long term if atleast 24 hours.
+    difference_seconds = (end_date - start_date)/1000
+    difference = max(difference_seconds/3600, 1)
+    difference = difference/24
+
+    #move long term if difference > 1 to top
+    removeFromPos = -1
+    for i in range(len(car_parks)):
+        park = car_parks[i]
+
+        if difference >= 1:
+            if park.is_long_term:
+                removeFromPos = i
+                break
+        else:
+            if not park.is_long_term:
+                removeFromPos = i
+                break
+                
+    
+    best_match_json = CarPark()
+    #some value was found and removed
+    if removeFromPos > -1:
+        best_match_json = CarParkSerializer(car_parks[removeFromPos]).data
+    else:
+        best_match_json = car_parks[0].data
+
+    car_parks = car_parks.filter().exclude(id = best_match_json['id'])
 
     # if len(car_parks) > 1:
         # for value in suitable_car_parks.values():
@@ -198,10 +223,7 @@ def get_availability(request):
         # for key, value in suitable_car_parks.items():
         #     if spaces == value:
         #         other_match = key
-    best_match_json = CarParkSerializer(best_match).data
-
-    car_parks = car_parks.filter().exclude(id = best_match.id)
-
+    
     jsonData = {"best_match": best_match_json, "other_matches": CarParkSerializer(car_parks, many=True).data}
     return JsonResponse({"code": 200, "data": jsonData})
 
