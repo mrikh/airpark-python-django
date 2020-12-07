@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import validate_email
 
+
 # Create your models here.
 class User(models.Model):
 
@@ -11,6 +12,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'Users'
+
 
 class CarPark(models.Model):
 
@@ -30,6 +32,7 @@ class CarPark(models.Model):
     class Meta:
         db_table = 'CarPark'
 
+
 class Booking(models.Model):
 
     car_park = models.ForeignKey(CarPark, on_delete = models.DO_NOTHING)
@@ -47,6 +50,7 @@ class Booking(models.Model):
 
     class Meta:
         db_table = 'Bookings'
+
 
 class Discount(models.Model):
 

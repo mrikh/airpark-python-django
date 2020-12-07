@@ -11,6 +11,7 @@ from rest_framework.exceptions import ValidationError
 import stripe
 import secrets
 import math
+import pytz
 
 stripe.api_key = 'sk_test_51HrvFLISFKjjBkELcTQH2DsC0vWYvqv4bA3MEZD0q7u8QIFzlqlJJ9SGqtSeUMDGIFubl7unKkVaR6luhKLsZejs00wY4PIg3h'
 
@@ -285,3 +286,99 @@ def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is
     total_discount = min(30, total_discount)
     final_price = calculated_price - (total_discount/100 * calculated_price)
     return (math.ceil(final_price), discounts_applied)
+
+
+@api_view(['GET'])
+def get_upcoming_bookings(request):
+
+    body = request.query_params
+    user_id = body.get('user_id', None)
+
+    current_date = datetime.today()
+    # retrieve all bookings and filter in the ones that have not ended
+    bookings = Booking.objects.all()
+    utc = pytz.UTC
+    current_date = current_date.replace(tzinfo=utc)
+    for i in bookings:
+        end_date = i.end_date.replace(tzinfo=utc)
+        if end_date < current_date:
+            bookings = bookings.exclude(id=i.id)
+
+    booking_list = [""] * 9
+    listofDicts = []
+    for b in bookings:
+        carpark = CarPark.objects.get(id=b.car_park_id)
+        booking_list[0] = b.id
+        booking_list[1] = carpark.latitude
+        booking_list[2] = carpark.longitude
+        booking_list[3] = carpark.car_park_name
+        booking_list[4] = carpark.airport_name
+        booking_list[5] = b.start_date
+        booking_list[6] = b.end_date
+        booking_list[7] = b.total_cost
+        booking_list[8] = carpark.image
+
+        booking_dict = {"booking_id": booking_list[0], "carpark_lat": booking_list[1], "carpark_long": booking_list[2],
+                        "carpark_name": booking_list[3], "airport_name": booking_list[4], "start_date": booking_list[5],
+                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8]}
+        listofDicts.append(booking_dict)
+    jsonData = {"upcoming": listofDicts}
+    return JsonResponse({"code": 200, "data": jsonData})
+
+
+@api_view(['GET'])
+def get_past_bookings(request):
+
+    body = request.query_params
+    user_id = body.get('user_id', None)
+
+    current_date = datetime.today()
+    # retrieve all bookings and filter in the ones that have not ended
+    bookings = Booking.objects.all()
+    utc = pytz.UTC
+    for i in bookings:
+        current_date = current_date.replace(tzinfo=utc)
+        end_date = i.end_date.replace(tzinfo=utc)
+        if end_date > current_date:
+            bookings = bookings.exclude(id=i.id)
+#        return JsonResponse({"code": 400, "message": "You have no previous bookings"})
+
+    booking_list = [""] * 9
+    listofDicts = []
+    for b in bookings:
+        carpark = CarPark.objects.get(id=b.car_park_id)
+        booking_list[0] = b.id
+        booking_list[1] = carpark.latitude
+        booking_list[2] = carpark.longitude
+        booking_list[3] = carpark.car_park_name
+        booking_list[4] = carpark.airport_name
+        booking_list[5] = b.start_date
+        booking_list[6] = b.end_date
+        booking_list[7] = b.total_cost
+        booking_list[8] = carpark.image
+
+        booking_dict = {"booking_id": booking_list[0], "carpark_lat": booking_list[1], "carpark_long": booking_list[2],
+                        "carpark_name": booking_list[3], "airport_name": booking_list[4], "start_date": booking_list[5],
+                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8]}
+        listofDicts.append(booking_dict)
+#       return JsonResponse({"code": 400, "message": "You have no previous bookings"})
+    jsonData = {"upcoming": listofDicts}
+    return JsonResponse({"code": 200, "data": jsonData})
+
+
+@api_view(['PUT'])
+def cancel_booking(request):
+
+    body = request.query_params
+    booking_id = body.get('booking_id', None)
+    booking = Booking.objects.get(id=booking_id)
+    booking.is_active = 0
+    booking.save()
+
+    utc = pytz.UTC
+    current_date = datetime.today().replace(tzinfo=utc)
+    end_date = booking.end_date.replace(tzinfo=utc)
+    if end_date > current_date:
+        end_date = current_date
+
+    return JsonResponse({"code": 200})
