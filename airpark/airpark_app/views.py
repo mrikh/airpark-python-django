@@ -239,9 +239,16 @@ def calc_price(request):
 def __calclulate_price(end_date, start_date, carpark_id, is_old, is_handicap, is_logged_in, email, car_wash):
     
     #convert to seconds and then to hours. Atleast 1 hour is the slot
-    hours_difference = max(((end_date - start_date)/1000)/3600, 1)
+    difference_seconds = (end_date - start_date)/1000
+    difference = max(difference_seconds/3600, 1)
+    
     carpark = CarPark.objects.get(id = carpark_id)
-    calculated_price = carpark.price * hours_difference
+
+    if carpark.is_long_term == True:
+        #round up the day
+        difference = math.ceil(difference/24)
+
+    calculated_price = carpark.price * difference
     
     if car_wash:
         calculated_price += 25
