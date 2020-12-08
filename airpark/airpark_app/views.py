@@ -329,8 +329,8 @@ def get_upcoming_bookings(request):
         booking_list[2] = carpark.longitude
         booking_list[3] = carpark.car_park_name
         booking_list[4] = carpark.airport_name
-        booking_list[5] = b.start_date
-        booking_list[6] = b.end_date
+        booking_list[5] = b.start_date.timestamp()
+        booking_list[6] = b.end_date.timestamp()
         booking_list[7] = b.total_cost
         booking_list[8] = carpark.image
 
@@ -361,8 +361,8 @@ def get_past_bookings(request):
         booking_list[2] = carpark.longitude
         booking_list[3] = carpark.car_park_name
         booking_list[4] = carpark.airport_name
-        booking_list[5] = b.start_date
-        booking_list[6] = b.end_date
+        booking_list[5] = b.start_date.timestamp()
+        booking_list[6] = b.end_date.timestamp()
         booking_list[7] = b.total_cost
         booking_list[8] = carpark.image
 
