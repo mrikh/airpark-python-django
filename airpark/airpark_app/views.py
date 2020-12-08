@@ -371,7 +371,7 @@ def get_past_bookings(request):
                         "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8], "alphanumeric_string" : b.alphanumeric_string, "is_long_term" : b.is_long_term}
         listofDicts.append(booking_dict)
 #       return JsonResponse({"code": 400, "message": "You have no previous bookings"})
-    jsonData = {"upcoming": listofDicts}
+    jsonData = {"history": listofDicts}
     return JsonResponse({"code": 200, "data": jsonData})
 
 
