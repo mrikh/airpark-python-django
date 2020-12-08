@@ -336,7 +336,7 @@ def get_upcoming_bookings(request):
 
         booking_dict = {"booking_id": booking_list[0], "carpark_lat": booking_list[1], "carpark_long": booking_list[2],
                         "carpark_name": booking_list[3], "airport_name": booking_list[4], "start_date": booking_list[5],
-                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8], "alphanumeric_string" : b.alphanumeric_string, "is_long_term" : b.is_long_term}
+                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8], "alphanumeric_string" : b.alphanumeric_string, "is_long_term" : carpark.is_long_term}
         listofDicts.append(booking_dict)
     jsonData = {"upcoming": listofDicts}
     return JsonResponse({"code": 200, "data": jsonData})
@@ -368,7 +368,7 @@ def get_past_bookings(request):
 
         booking_dict = {"booking_id": booking_list[0], "carpark_lat": booking_list[1], "carpark_long": booking_list[2],
                         "carpark_name": booking_list[3], "airport_name": booking_list[4], "start_date": booking_list[5],
-                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8], "alphanumeric_string" : b.alphanumeric_string, "is_long_term" : b.is_long_term}
+                        "end_date": booking_list[6], "total_price": booking_list[7], "carpark_image": booking_list[8], "alphanumeric_string" : b.alphanumeric_string, "is_long_term" : carpark.is_long_term}
         listofDicts.append(booking_dict)
 #       return JsonResponse({"code": 400, "message": "You have no previous bookings"})
     jsonData = {"history": listofDicts}
