@@ -36,7 +36,7 @@ class CarPark(models.Model):
 class Booking(models.Model):
 
     car_park = models.ForeignKey(CarPark, on_delete = models.DO_NOTHING)
-    email = models.CharField(max_length = 50, blank = False, default = '', validators = [validate_email])
+    email = models.CharField(max_length = 51, blank = False, default = '', validators = [validate_email])
     is_old = models.BooleanField(default = False)
     is_logged_in = models.BooleanField(default = False)
     car_wash = models.BooleanField(default = False)

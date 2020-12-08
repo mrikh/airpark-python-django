@@ -75,8 +75,8 @@ def payment_done(request):
     result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
 
     body['car_park'] = car_park_id
-    body['start_date'] = datetime.fromtimestamp(body['start_date']/1000)
-    body['end_date'] = datetime.fromtimestamp(body['end_date']/1000)
+    body['start_date'] = datetime.fromtimestamp(body['start_date']/1000, tzinfo=pytz.utc)
+    body['end_date'] = datetime.fromtimestamp(body['end_date']/1000, tzinfo=pytz.utc)
     body['total_cost'] = result[0]
     body['alphanumeric_string'] = secrets.token_hex(16)
 
@@ -318,13 +318,7 @@ def get_upcoming_bookings(request):
 
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all()
-    utc = pytz.UTC
-    current_date = current_date.replace(tzinfo=utc)
-    for i in bookings:
-        end_date = i.end_date.replace(tzinfo=utc)
-        if end_date < current_date:
-            bookings = bookings.exclude(id=i.id)
+    bookings = Booking.objects.all().filter(end_date__gte = current_date)
 
     booking_list = [""] * 9
     listofDicts = []
@@ -356,14 +350,7 @@ def get_past_bookings(request):
 
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all()
-    utc = pytz.UTC
-    for i in bookings:
-        current_date = current_date.replace(tzinfo=utc)
-        end_date = i.end_date.replace(tzinfo=utc)
-        if end_date > current_date:
-            bookings = bookings.exclude(id=i.id)
-#        return JsonResponse({"code": 400, "message": "You have no previous bookings"})
+    bookings = Booking.objects.all().filter(end_date__lte = current_date)
 
     booking_list = [""] * 9
     listofDicts = []
