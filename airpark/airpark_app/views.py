@@ -75,8 +75,8 @@ def payment_done(request):
     result = __calclulate_price(end_date, start_date, car_park_id, is_old, is_handicap, is_logged_in, email, car_wash)
 
     body['car_park'] = car_park_id
-    body['start_date'] = datetime.fromtimestamp(body['start_date']/1000, tzinfo=pytz.utc)
-    body['end_date'] = datetime.fromtimestamp(body['end_date']/1000, tzinfo=pytz.utc)
+    body['start_date'] = datetime.fromtimestamp(body['start_date']/1000, tz=pytz.utc)
+    body['end_date'] = datetime.fromtimestamp(body['end_date']/1000, tz=pytz.utc)
     body['total_cost'] = result[0]
     body['alphanumeric_string'] = secrets.token_hex(16)
 
