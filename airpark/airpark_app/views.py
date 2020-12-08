@@ -316,9 +316,11 @@ def get_upcoming_bookings(request):
     body = request.query_params
     user_id = body.get('user_id', None)
 
+    user = User.objects.all().filter(id = user_id)
+
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all().filter(end_date__gte = current_date)
+    bookings = Booking.objects.all().filter(email = user.email, userend_date__gte = current_date)
 
     booking_list = [""] * 9
     listofDicts = []
@@ -347,10 +349,11 @@ def get_past_bookings(request):
 
     body = request.query_params
     user_id = body.get('user_id', None)
+    user = User.objects.all().filter(id = user_id)
 
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all().filter(end_date__lte = current_date)
+    bookings = Booking.objects.all().filter(email=user.email, end_date__lte = current_date)
 
     booking_list = [""] * 9
     listofDicts = []
