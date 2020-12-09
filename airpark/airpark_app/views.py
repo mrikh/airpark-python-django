@@ -320,7 +320,7 @@ def get_upcoming_bookings(request):
 
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all().filter(email = user.email, end_date__gte = current_date)
+    bookings = Booking.objects.all().filter(email = user.email, end_date__gte = current_date, is_active = 1)
 
     booking_list = [""] * 9
     listofDicts = []
@@ -353,7 +353,7 @@ def get_past_bookings(request):
 
     current_date = datetime.today()
     # retrieve all bookings and filter in the ones that have not ended
-    bookings = Booking.objects.all().filter(email=user.email, end_date__lte = current_date)
+    bookings = Booking.objects.all().filter(email=user.email, end_date__lte = current_date, is_active = 1)
 
     booking_list = [""] * 9
     listofDicts = []
@@ -386,11 +386,4 @@ def cancel_booking(request):
     booking = Booking.objects.get(id=booking_id)
     booking.is_active = 0
     booking.save()
-
-    utc = pytz.UTC
-    current_date = datetime.today().replace(tzinfo=utc)
-    end_date = booking.end_date.replace(tzinfo=utc)
-    if end_date > current_date:
-        end_date = current_date
-
     return JsonResponse({"code": 200})
