@@ -212,7 +212,6 @@ def get_availability(request):
     if removeFromPos > -1:
         best_match_json = CarParkSerializer(car_parks[removeFromPos]).data
     else:
-        print('============')
         best_match_json = CarParkSerializer(car_parks[0]).data
 
     car_parks = car_parks.filter().exclude(id = best_match_json['id'])
