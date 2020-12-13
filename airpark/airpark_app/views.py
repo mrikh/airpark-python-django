@@ -318,7 +318,7 @@ def get_upcoming_bookings(request):
 
     user = User.objects.get(id = user_id)
 
-    current_date = datetime.today()
+    current_date = datetime.now(tz=pytz.utc)
     # retrieve all bookings and filter in the ones that have not ended
     bookings = Booking.objects.all().filter(email = user.email, end_date__gte = current_date, is_active = 1)
 
@@ -351,7 +351,7 @@ def get_past_bookings(request):
     user_id = body.get('user_id', None)
     user = User.objects.get(id = user_id)
 
-    current_date = datetime.today()
+    current_date = datetime.now(tz=pytz.utc)
     # retrieve all bookings and filter in the ones that have not ended
     bookings = Booking.objects.all().filter(email=user.email, end_date__lte = current_date, is_active = 1)
 
