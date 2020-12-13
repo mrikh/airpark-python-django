@@ -90,10 +90,10 @@ WSGI_APPLICATION = 'airpark.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'airpark_database',
-        'USER': 'airpark-admin',
-        'PASSWORD': '1234',
-        'HOST': '34.105.141.121',
+        'NAME': 'airpark_db',
+        'USER': 'root',
+        'PASSWORD': 'DM1iFjh6tEvAtrf7',
+        'HOST': '34.89.83.124',
         'PORT': '3306',
     }
 
